@@ -12,8 +12,8 @@ import { auth } from "../auth/firebase";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);  // Normal Google user
-  const [admin, setAdmin] = useState(null); // Admin user
+  const [user, setUser] = useState(null);  
+  const [admin, setAdmin] = useState(null); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // Google login for normal users
+  
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Email/password login for admin
+  
   const loginAsAdmin = async (email, password) => {
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
@@ -52,11 +52,11 @@ export const AuthProvider = ({ children }) => {
       setAdmin(credential.user);
     } catch (err) {
       console.error("Admin login error:", err.message);
-      throw err; // rethrow for UI
+      throw err; 
     }
   };
 
-  // Logout for both user types
+  
   const logout = async () => {
     await signOut(auth);
     setUser(null);

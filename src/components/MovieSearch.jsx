@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MovieCard from "./MovieCard";
 import BookingModal from "./BookingModal";
 import { useThemeContext } from "../context/ThemeContext";
-import { Search } from "lucide-react"; // search icon
+import { Search } from "lucide-react";
 
 const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
 
@@ -12,23 +12,36 @@ function MovieSearch() {
   const [error, setError] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { mode } = useThemeContext();
   const darkMode = mode === "dark";
 
-  const searchMovies = async (e) => {
-    e.preventDefault();
-    if (!query) return;
+  //  Debounced Search Effect
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (query.trim().length > 0) {
+        searchMovies(query);
+      } else {
+        setMovies([]); // Clear results if query empty
+      }
+    }, 500); 
 
+    return () => clearTimeout(delayDebounce);
+  }, [query]);
+
+  const searchMovies = async (searchTerm) => {
     if (!API_KEY) {
       setError("TMDb API key is missing!");
       return;
     }
 
     try {
+      setLoading(true);
+      setError("");
       const res = await fetch(
         `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
-          query
+          searchTerm
         )}`
       );
 
@@ -36,11 +49,12 @@ function MovieSearch() {
 
       const data = await res.json();
       setMovies(data.results || []);
-      setError("");
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
       setMovies([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,10 +74,7 @@ function MovieSearch() {
       </h1>
 
       {/* Search Bar */}
-      <form
-        onSubmit={searchMovies}
-        className="flex justify-center mb-8 w-full"
-      >
+      <div className="flex justify-center mb-8 w-full">
         <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 w-5 h-5" />
           <input
@@ -76,29 +87,24 @@ function MovieSearch() {
                        bg-white dark:bg-gray-800 dark:border-gray-700 shadow-md"
           />
         </div>
-        <button
-          type="submit"
-          className="ml-3 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl 
-                     shadow-md hover:bg-indigo-700 transition"
-        >
-          Search
-        </button>
-      </form>
+      </div>
 
       {/* Error Message */}
       {error && <p className="text-center text-red-500 mb-4">{error}</p>}
 
       {/* Movie Results */}
-      {movies.length > 0 ? (
+      {loading ? (
+        <p className="text-center text-gray-500 dark:text-gray-400">Searching...</p>
+      ) : query.trim() === "" ? (
+        <p className="text-center text-gray-500 dark:text-gray-400">Start typing to search movies 🎥</p>
+      ) : movies.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {movies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} onBook={handleBook} />
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 dark:text-gray-400">
-          No movies found. Try searching!
-        </p>
+        <p className="text-center text-gray-500 dark:text-gray-400">No movies found for "{query}"</p>
       )}
 
       {/* Booking Modal */}
@@ -114,3 +120,4 @@ function MovieSearch() {
 }
 
 export default MovieSearch;
+

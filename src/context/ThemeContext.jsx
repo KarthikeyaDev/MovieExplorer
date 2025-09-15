@@ -6,12 +6,12 @@ const ThemeContext = createContext();
 export const useThemeContext = () => useContext(ThemeContext);
 
 export const ThemeContextProvider = ({ children }) => {
-  // Load initial theme from localStorage (default = light)
+  
   const [mode, setMode] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
 
-  // Whenever mode changes, store it in localStorage
+  
   useEffect(() => {
     localStorage.setItem("theme", mode);
   }, [mode]);

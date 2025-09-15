@@ -40,7 +40,7 @@ const BookingModal = ({ open, onClose, movie }) => {
 
     await addBooking(booking);
 
-    // ✅ Show styled success message instead of plain alert
+    
     setSuccessMsg(
       `🎉 ${movie.title} booked successfully for ${time} on ${date}`
     );
@@ -148,4 +148,3 @@ const BookingModal = ({ open, onClose, movie }) => {
 };
 
 export default BookingModal;
-

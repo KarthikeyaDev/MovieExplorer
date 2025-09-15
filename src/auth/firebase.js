@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Config from .env
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -14,11 +14,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-// Export Firebase services
+
 export const auth = getAuth(app);
 export const provider = new GoogleAuthProvider();
 export const db = getFirestore(app);
 
-// Auth helper functions
 export const loginWithGoogle = () => signInWithPopup(auth, provider);
 export const logout = () => signOut(auth);
