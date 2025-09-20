@@ -23,7 +23,7 @@ function MovieSearch() {
       if (query.trim().length > 0) {
         searchMovies(query);
       } else {
-        setMovies([]); // Clear results if query empty
+        setMovies([]); 
       }
     }, 500); 
 

@@ -1,47 +1,65 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../auth/firebase";
-import { getAllBookings, updateBookingStatus } from "../services/bookingService";
+import { getAllBookings, updateBookingStatus, getSummary } from "../services/bookingService";
 import { useThemeContext } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { FaRupeeSign, FaTicketAlt, FaChartBar } from "react-icons/fa";
 
-
 const AdminDashboard = () => {
+  const { admin, logout } = useAuth(); 
   const navigate = useNavigate();
   const { mode } = useThemeContext();
   const darkMode = mode === "dark";
 
   const [bookings, setBookings] = useState([]);
+  const [summary, setSummary] = useState({ totalRevenue: 0, totalTickets: 0, totalBookings: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const BOOKINGS_PER_PAGE = 10;
 
+ 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user || user.email !== "admin@example.com") navigate("/admin-login");
-      else {
+    if (!admin) {
+      navigate("/login");
+    }
+  }, [admin, navigate]);
+
+  
+  useEffect(() => {
+    if (!admin) return; 
+
+    const fetchData = async () => {
+      try {
         const data = await getAllBookings();
         const sorted = data.sort((a, b) => new Date(b.bookingTime) - new Date(a.bookingTime));
         setBookings(sorted);
+
+        const summaryData = await getSummary();
+        setSummary(summaryData);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
         setLoading(false);
       }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+    };
 
-  const handleLogout = async () => {
-    await auth.signOut();
-    navigate("/admin-login");
+    fetchData();
+  }, [admin]);
+
+  const handleLogout = () => {
+    logout();          
+    navigate("/login"); 
   };
 
   const handleStatusChange = async (id, newStatus) => {
     await updateBookingStatus(id, newStatus);
     setBookings((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
+      prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b))
     );
+    const summaryData = await getSummary();
+    setSummary(summaryData);
   };
 
   const filteredBookings = useMemo(
@@ -60,13 +78,6 @@ const AdminDashboard = () => {
     const start = (page - 1) * BOOKINGS_PER_PAGE;
     return filteredBookings.slice(start, start + BOOKINGS_PER_PAGE);
   }, [page, filteredBookings]);
-
-  const summary = useMemo(() => {
-    const revenue = filteredBookings.reduce((acc, b) => acc + (b.totalAmount || 0), 0);
-    const tickets = filteredBookings.reduce((acc, b) => acc + (b.numTickets || 0), 0);
-    const total = filteredBookings.length;
-    return { revenue, tickets, total };
-  }, [filteredBookings]);
 
   if (loading)
     return (
@@ -91,9 +102,9 @@ const AdminDashboard = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         {[
-          { title: "Total Revenue", value: `₹${summary.revenue}`, icon: <FaRupeeSign /> },
-          { title: "Tickets Sold", value: summary.tickets, icon: <FaTicketAlt /> },
-          { title: "Total Bookings", value: summary.total, icon: <FaChartBar /> },
+          { title: "Total Revenue", value: `₹${summary.totalRevenue}`, icon: <FaRupeeSign /> },
+          { title: "Tickets Sold", value: summary.totalTickets, icon: <FaTicketAlt /> },
+          { title: "Total Bookings", value: summary.totalBookings, icon: <FaChartBar /> },
         ].map((card) => (
           <div
             key={card.title}
@@ -113,7 +124,7 @@ const AdminDashboard = () => {
       {/* Search */}
       <input
         type="text"
-        placeholder="🔍 Search by User, Email, or Movie"
+        placeholder=" Search by User, Email, or Movie"
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
@@ -133,9 +144,7 @@ const AdminDashboard = () => {
             <tr>
               {["User Name", "Email", "Movie", "Tickets", "Amount", "Show Date", "Booked At", "User Status", "Review Status"].map(
                 (col) => (
-                  <th key={col} className="px-4 py-3 font-semibold">
-                    {col}
-                  </th>
+                  <th key={col} className="px-4 py-3 font-semibold">{col}</th>
                 )
               )}
             </tr>
@@ -143,7 +152,7 @@ const AdminDashboard = () => {
           <tbody>
             {paginatedBookings.map((b, idx) => (
               <tr
-                key={b.id}
+                key={b._id}
                 className={`transition ${
                   darkMode
                     ? idx % 2 === 0
@@ -161,22 +170,18 @@ const AdminDashboard = () => {
                 <td className="px-4 py-2">₹{b.totalAmount || 0}</td>
                 <td className="px-4 py-2">{b.showDate || "N/A"}</td>
                 <td className="px-4 py-2">{b.bookingTime ? new Date(b.bookingTime).toLocaleString() : "N/A"}</td>
-                {/* User Status (always confirmed) */}
                 <td className="px-4 py-2">
                   <span className="px-2 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700 border border-green-300">
                     Confirmed
                   </span>
                 </td>
-                {/* Admin Review Status */}
                 <td className="px-4 py-2">
                   <select
                     value={b.status || "Pending"}
-                    onChange={(e) => handleStatusChange(b.id, e.target.value)}
-                    className={`px-2 py-1 rounded-lg border font-medium
-                      ${darkMode
-                        ? "bg-gray-800 border-gray-600 text-white"
-                        : "bg-white border-gray-300 text-gray-900"
-                      }`}
+                    onChange={(e) => handleStatusChange(b._id, e.target.value)}
+                    className={`px-2 py-1 rounded-lg border font-medium ${
+                      darkMode ? "bg-gray-800 border-gray-600 text-white" : "bg-white border-gray-300 text-gray-900"
+                    }`}
                   >
                     <option value="Pending" className="text-yellow-600">Pending</option>
                     <option value="Confirmed" className="text-green-600">Confirmed</option>
@@ -214,6 +219,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
- 
-
-

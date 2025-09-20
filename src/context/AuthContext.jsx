@@ -1,74 +1,97 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { auth } from "../auth/firebase";
+
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);  
+  const [user, setUser] = useState(null);   
   const [admin, setAdmin] = useState(null); 
+  const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        setUser(null);
-        setAdmin(null);
-      } else if (currentUser.email === "admin@example.com") {
-        setAdmin(currentUser);
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+    const role = localStorage.getItem("role");
+
+    if (token && userData && role) {
+      const parsedUser = JSON.parse(userData);
+      if (role === "admin") {
+        setAdmin(parsedUser);
         setUser(null);
       } else {
-        setUser(currentUser);
+        setUser(parsedUser);
         setAdmin(null);
       }
-    });
-    return () => unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   
-  const loginWithGoogle = async () => {
+  const register = async (name, email, password) => {
     try {
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({ prompt: "select_account" }); // always show account selection
-      await signInWithPopup(auth, provider);
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Registration failed");
+      return data; // registration success
     } catch (err) {
-      console.error("Google login error:", err.message);
+      console.error("Register error:", err.message);
+      throw err;
     }
   };
 
   
-  const loginAsAdmin = async (email, password) => {
+  const login = async (email, password) => {
     try {
-      const credential = await signInWithEmailAndPassword(auth, email, password);
-      if (credential.user.email !== "admin@example.com") {
-        throw new Error("Not authorized as admin");
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Login failed");
+
+      
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("role", data.user.role); 
+
+      
+      if (data.user.role === "admin") {
+        setAdmin(data.user);
+        setUser(null);
+      } else {
+        setUser(data.user);
+        setAdmin(null);
       }
-      setAdmin(credential.user);
+
+      return data.user;
     } catch (err) {
-      console.error("Admin login error:", err.message);
-      throw err; 
+      console.error("Login error:", err.message);
+      throw err;
     }
   };
 
-  
-  const logout = async () => {
-    await signOut(auth);
+ 
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
     setUser(null);
     setAdmin(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, admin, loginWithGoogle, loginAsAdmin, logout }}>
+    <AuthContext.Provider value={{ user, admin, register, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
-

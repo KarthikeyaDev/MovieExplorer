@@ -10,21 +10,21 @@ const tmdb = axios.create({
   params: { api_key: API_KEY },
 });
 
-//  Popular movies with pagination
+
 export const getPopularMovies = (page = 1) =>
   tmdb.get("/movie/popular", { params: { page } });
 
-//  Search movies with pagination
+
 export const searchMovies = (query, page = 1) =>
   tmdb.get("/search/movie", { params: { query, page } });
 
-//  Genres
+
 export const getGenres = () => tmdb.get("/genre/movie/list");
 
-//  Languages
+
 export const getLanguages = () => tmdb.get("/configuration/languages");
 
-//  Filter movies with pagination
+
 export const filterMovies = (filters, page = 1) =>
   tmdb.get("/discover/movie", {
     params: {
@@ -36,7 +36,7 @@ export const filterMovies = (filters, page = 1) =>
     },
   });
 
-//  Fetch trailers for a movie
+
 export const getMovieTrailer = async (movieId) => {
   try {
     const res = await tmdb.get(`/movie/${movieId}/videos`);
@@ -50,11 +50,11 @@ export const getMovieTrailer = async (movieId) => {
   }
 };
 
-//  Fetch cast for a movie
+
 export const getMovieCast = async (movieId) => {
   try {
     const res = await tmdb.get(`/movie/${movieId}/credits`);
-    return res.data.cast.slice(0, 5); // top 5 actors
+    return res.data.cast.slice(0, 5); 
   } catch (error) {
     console.error("Error fetching cast:", error);
     return [];
