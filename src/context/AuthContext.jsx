@@ -1,15 +1,14 @@
 
-import React, { createContext, useContext, useState, useEffect } from "react";
 
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);   
-  const [admin, setAdmin] = useState(null); 
+  const [user, setUser] = useState(null);
+  const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -28,7 +27,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  
   const register = async (name, email, password) => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
@@ -38,14 +36,12 @@ export const AuthProvider = ({ children }) => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Registration failed");
-      return data; // registration success
+      return data;
     } catch (err) {
-      console.error("Register error:", err.message);
-      throw err;
+      throw new Error(err.message || "Registration failed");
     }
   };
 
-  
   const login = async (email, password) => {
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -53,16 +49,13 @@ export const AuthProvider = ({ children }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("role", data.user.role); 
+      localStorage.setItem("role", data.user.role);
 
-      
       if (data.user.role === "admin") {
         setAdmin(data.user);
         setUser(null);
@@ -73,12 +66,10 @@ export const AuthProvider = ({ children }) => {
 
       return data.user;
     } catch (err) {
-      console.error("Login error:", err.message);
-      throw err;
+      throw new Error(err.message || "Login failed");
     }
   };
 
- 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -87,8 +78,42 @@ export const AuthProvider = ({ children }) => {
     setAdmin(null);
   };
 
+  
+  const forgotPassword = async (email) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Forgot password failed");
+      return data;
+    } catch (err) {
+      throw new Error(err.message || "Forgot password failed");
+    }
+  };
+
+  
+  const resetPassword = async (token, password) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Reset failed");
+      return data;
+    } catch (err) {
+      throw new Error(err.message || "Reset failed");
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, admin, register, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, admin, register, login, logout, forgotPassword, resetPassword, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

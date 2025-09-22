@@ -18,6 +18,17 @@ const MovieModal = ({ movie, onClose }) => {
     load();
   }, [movie.id]);
 
+   const handleBookingSuccess = () => {
+    // Close BookingModal first
+    setOpenBooking(false);
+
+    // Delay closing MovieModal slightly so user sees success feedback
+    setTimeout(() => {
+      onClose();
+    }, 500); // 0.5s delay
+  };
+
+
   return (
     <>
       {/* Main modal */}
@@ -87,6 +98,7 @@ const MovieModal = ({ movie, onClose }) => {
         open={openBooking}
         onClose={() => setOpenBooking(false)}
         movie={movie}
+         onBookingSuccess={handleBookingSuccess} // pass callback
       />
     </>
   );

@@ -1,30 +1,38 @@
 
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useThemeContext } from "../context/ThemeContext";
 
-export default function Register() {
-  const { register } = useAuth();
+const ResetPassword = () => {
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const { resetPassword } = useAuth();
   const { mode } = useThemeContext();
   const darkMode = mode === "dark";
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
     setError("");
+    setMessage("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
-      const res = await register(name, email, password);
-      if (res.token) navigate("/");
-      else setError(res.message || "Registration failed");
+      const data = await resetPassword(token, password);
+      setMessage(data.message || "Password reset successful");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError(err.message || "Registration failed");
+      setError(err.message || "Reset failed");
     }
   };
 
@@ -39,27 +47,16 @@ export default function Register() {
           darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
         }`}
       >
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Reset Password</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleReset} className="space-y-4">
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-            required
-            className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 ${
-              darkMode
-                ? "bg-gray-700 text-white placeholder-gray-400 border-gray-600 focus:ring-blue-500"
-                : "bg-gray-50 text-gray-900 placeholder-gray-500 border-gray-300 focus:ring-blue-500"
-            }`}
-          />
-
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
+            type="password"
+            placeholder="New Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
             className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 ${
               darkMode
@@ -70,9 +67,9 @@ export default function Register() {
 
           <input
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Confirm New Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
             className={`w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 ${
               darkMode
@@ -85,10 +82,12 @@ export default function Register() {
             type="submit"
             className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition duration-200"
           >
-            Register
+            Reset Password
           </button>
         </form>
       </div>
     </div>
   );
-}
+};
+
+export default ResetPassword;

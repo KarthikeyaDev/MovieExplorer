@@ -1,69 +1,47 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js"; 
 
+
+import { registerUser, loginUser,  forgotPasswordService , resetPasswordService} from "../services/authService.js";
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
-    const existing = await User.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashed = await bcrypt.hash(password, 10);
-
-    
-    const role =
-      process.env.ADMIN_EMAIL &&
-      email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
-        ? "admin"
-        : "user";
-
-    const user = await User.create({ name, email, password: hashed, role });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.status(201).json({
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
-      token,
-    });
+    const data = await registerUser(req.body);
+    res.status(201).json(data);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const data = await loginUser(req.body);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const data = await forgotPasswordService(req.body.email);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
   }
 };
 
 
-export const login = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
+    const { token } = req.params; 
+    const { password } = req.body; 
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ message: "Invalid credentials" });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.json({
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
-      token,
-    });
+    const data = await resetPasswordService(token, password);
+    res.json(data);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(400).json({ message: err.message });
   }
 };

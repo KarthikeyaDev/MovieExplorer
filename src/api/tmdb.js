@@ -43,7 +43,7 @@ export const getMovieTrailer = async (movieId) => {
     const trailers = res.data.results.filter(
       (vid) => vid.site === "YouTube" && vid.type === "Trailer"
     );
-    return trailers.length > 0 ? trailers[0].key : null; // first trailer key
+    return trailers.length > 0 ? trailers[0].key : null; 
   } catch (error) {
     console.error("Error fetching trailer:", error);
     return null;

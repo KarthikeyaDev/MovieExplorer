@@ -1,4 +1,5 @@
 
+
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -6,11 +7,11 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login"; 
-import MovieSearch from "./components/MovieSearch";
-import { useAuth } from "./context/AuthContext"; 
-import { AuthProvider } from "./context/AuthContext"; 
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
 
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { SearchToggleProvider } from "./context/SearchToggleContext"; // 🔹 context for search toggle
 
 const PrivateRoute = ({ children, adminOnly }) => {
   const { user, admin, loading } = useAuth();
@@ -23,11 +24,8 @@ const PrivateRoute = ({ children, adminOnly }) => {
     );
   }
 
-  if (adminOnly) {
-    return admin ? children : <Navigate to="/login" />;
-  }
-
-  return (user || admin) ? children : <Navigate to="/login" />;
+  if (adminOnly) return admin ? children : <Navigate to="/login" />;
+  return user || admin ? children : <Navigate to="/login" />;
 };
 
 const App = () => {
@@ -39,24 +37,34 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <Router>
-        <Navbar onFilterChange={handleFilterChange} />
-        <Routes>
-          <Route path="/" element={<Home filters={filters} />} />
-          <Route path="/search" element={<MovieSearch />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/admin-dashboard"
-            element={
-              <PrivateRoute adminOnly={true}>
-                <AdminDashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
+      <SearchToggleProvider>
+        <Router>
+          <Navbar onFilterChange={handleFilterChange} />
+
+          <Routes>
+            {/* Home handles search internally */}
+            <Route path="/" element={<Home filters={filters} />} />
+
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+            {/* Admin Dashboard protected */}
+            <Route
+              path="/admin-dashboard"
+              element={
+                <PrivateRoute adminOnly={true}>
+                  <AdminDashboard />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Catch-all redirects to home */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Router>
+      </SearchToggleProvider>
     </AuthProvider>
   );
 };
