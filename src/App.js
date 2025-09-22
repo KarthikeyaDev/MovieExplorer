@@ -11,7 +11,7 @@ import Register from "./pages/Register";
 import ResetPassword from "./pages/ResetPassword";
 
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import { SearchToggleProvider } from "./context/SearchToggleContext"; // 🔹 context for search toggle
+import { SearchToggleProvider } from "./context/SearchToggleContext"; 
 
 const PrivateRoute = ({ children, adminOnly }) => {
   const { user, admin, loading } = useAuth();

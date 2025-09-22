@@ -32,7 +32,7 @@ const Login = () => {
     }
   };
 
-  // Forgot password
+  
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setForgotMsg("");
@@ -55,11 +55,11 @@ const Login = () => {
           darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
         }`}
       >
-        {/* Title */}
+        
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-        {/* Login Form */}
+        
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
@@ -95,7 +95,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Forgot Password Toggle */}
+        
         <div className="mt-4 text-center">
           <button
             onClick={() => {
@@ -109,7 +109,7 @@ const Login = () => {
           </button>
         </div>
 
-        {/* Forgot Password Form */}
+        
         {forgotOpen && (
           <div
             className={`mt-4 p-4 rounded-xl border ${

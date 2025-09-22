@@ -19,22 +19,22 @@ const MovieModal = ({ movie, onClose }) => {
   }, [movie.id]);
 
    const handleBookingSuccess = () => {
-    // Close BookingModal first
+    
     setOpenBooking(false);
 
-    // Delay closing MovieModal slightly so user sees success feedback
+    
     setTimeout(() => {
       onClose();
-    }, 500); // 0.5s delay
+    }, 500); 
   };
 
 
   return (
     <>
-      {/* Main modal */}
+      
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-3xl w-full overflow-y-auto max-h-[90vh] p-6 relative">
-          {/* Close button */}
+          
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
@@ -42,12 +42,12 @@ const MovieModal = ({ movie, onClose }) => {
             <X className="w-6 h-6" />
           </button>
 
-          {/* Title */}
+          
           <h2 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">
             {movie.title}
           </h2>
 
-          {/* Trailer */}
+          
           {trailerKey && (
             <div className="aspect-video mb-4 rounded-lg overflow-hidden shadow-md">
               <iframe
@@ -60,12 +60,12 @@ const MovieModal = ({ movie, onClose }) => {
             </div>
           )}
 
-          {/* Plot */}
+          
           <p className="text-gray-700 dark:text-gray-300 mb-4">
             {movie.overview || "No description available."}
           </p>
 
-          {/* Cast */}
+          
           <h3 className="font-semibold mb-2">Cast</h3>
           <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
             {cast.length > 0 ? (
@@ -82,7 +82,7 @@ const MovieModal = ({ movie, onClose }) => {
             )}
           </ul>
 
-          {/* Book Now button */}
+          
           <button
             onClick={() => setOpenBooking(true)}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-lg font-semibold transition"
@@ -93,12 +93,12 @@ const MovieModal = ({ movie, onClose }) => {
         </div>
       </div>
 
-      {/* Booking modal */}
+      
       <BookingModal
         open={openBooking}
         onClose={() => setOpenBooking(false)}
         movie={movie}
-         onBookingSuccess={handleBookingSuccess} // pass callback
+         onBookingSuccess={handleBookingSuccess} 
       />
     </>
   );

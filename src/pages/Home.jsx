@@ -23,9 +23,9 @@ const Home = ({ filters }) => {
 
   const { mode } = useThemeContext();
   const darkMode = mode === "dark";
-  const { showSearch } = useSearchToggle(); // 🔹 read context
+  const { showSearch } = useSearchToggle(); 
 
-  // Debounced search
+  
   useEffect(() => {
     const delay = setTimeout(() => {
       if (query.trim().length > 0) {
@@ -65,7 +65,7 @@ const Home = ({ filters }) => {
     }
   };
 
-  // Load popular or filtered movies
+  
   useEffect(() => {
     if (query.trim().length > 0) return;
     const loadMovies = async () => {
@@ -97,7 +97,7 @@ const Home = ({ filters }) => {
           : "bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-900"
       }`}
     >
-      {/* Slide-down Search Bar */}
+      
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out mb-6 ${
           showSearch ? "max-h-40" : "max-h-0"
@@ -119,10 +119,10 @@ const Home = ({ filters }) => {
         </div>
       </div>
 
-      {/* Error Message */}
+      
       {error && <p className="text-center text-red-500 mb-4">{error}</p>}
 
-      {/* Movie Results */}
+      
       {query.trim().length > 0 ? (
         loading ? (
           <p className="text-center text-gray-500 dark:text-gray-400">Searching...</p>
@@ -139,14 +139,14 @@ const Home = ({ filters }) => {
         )
       ) : (
         <>
-          {/* Movie Grid */}
+          
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} onBook={handleBook} />
             ))}
           </div>
 
-          {/* Pagination */}
+          
           <div className="flex justify-center space-x-4 mt-8">
             <button
               disabled={page === 1}
@@ -165,7 +165,7 @@ const Home = ({ filters }) => {
         </>
       )}
 
-      {/* Booking Modal */}
+      
       {selectedMovie && (
         <BookingModal
           open={open}

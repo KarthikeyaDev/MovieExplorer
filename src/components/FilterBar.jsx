@@ -34,7 +34,7 @@ const FilterBar = ({ onFilterChange }) => {
 
   return (
     <div className="relative w-full" ref={dropdownRef}>
-      {/* Filter Button */}
+      
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex justify-between items-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition"
@@ -45,7 +45,7 @@ const FilterBar = ({ onFilterChange }) => {
         />
       </button>
 
-      {/* Dropdown Menu */}
+      
       <AnimatePresence>
         {open && (
           <motion.div
@@ -55,7 +55,7 @@ const FilterBar = ({ onFilterChange }) => {
             transition={{ duration: 0.2 }}
             className="absolute z-50 mt-2 w-full md:w-64 bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
           >
-            {/* Rating */}
+            
             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
               <span className="font-semibold text-gray-700 dark:text-gray-200">Rating</span>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -75,7 +75,7 @@ const FilterBar = ({ onFilterChange }) => {
               </div>
             </div>
 
-            {/* Genre */}
+            
             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 max-h-40 overflow-y-auto">
               <span className="font-semibold text-gray-700 dark:text-gray-200">Genre</span>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -95,7 +95,7 @@ const FilterBar = ({ onFilterChange }) => {
               </div>
             </div>
 
-            {/* Language */}
+            
             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 max-h-40 overflow-y-auto">
               <span className="font-semibold text-gray-700 dark:text-gray-200">Language</span>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -115,7 +115,7 @@ const FilterBar = ({ onFilterChange }) => {
               </div>
             </div>
 
-            {/* Release Date */}
+            
             <div className="px-4 py-2">
               <span className="font-semibold text-gray-700 dark:text-gray-200">Release Date</span>
               <div className="flex gap-2 mt-2">

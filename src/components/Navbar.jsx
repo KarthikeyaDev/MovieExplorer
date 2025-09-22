@@ -12,12 +12,12 @@ const Navbar = ({ onFilterChange }) => {
   const { user, admin, logout } = useAuth();
   const { mode, toggleTheme } = useThemeContext();
   const darkMode = mode === "dark";
-  const { toggleSearch } = useSearchToggle(); // 🔹 use context
+  const { toggleSearch } = useSearchToggle(); 
 
   return (
     <nav className="sticky top-0 z-50 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg p-3">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
-        {/* Logo */}
+        
         <div className="flex items-center space-x-4 w-full md:w-auto">
           <Link
             to="/"
@@ -27,15 +27,15 @@ const Navbar = ({ onFilterChange }) => {
           </Link>
         </div>
 
-        {/* Nav Links */}
+        
         <div className="flex flex-1 items-center justify-center space-x-4 w-full md:w-auto">
           <Link to="/" className="hover:text-yellow-300 transition font-medium">
             Home
           </Link>
 
-          {/* Search button triggers search input in Home */}
+          
           <button
-            onClick={toggleSearch} // 🔹 call context toggle
+            onClick={toggleSearch} 
             className="hover:text-yellow-300 transition font-medium"
           >
             Search
@@ -55,7 +55,7 @@ const Navbar = ({ onFilterChange }) => {
           )}
         </div>
 
-        {/* Right Side: Theme + Auth */}
+        
         <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
           <button
             onClick={toggleTheme}

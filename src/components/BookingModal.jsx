@@ -47,17 +47,17 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
         `🎉 ${booking.movieTitle} booked successfully for ${booking.showTime} on ${booking.showDate}`
       );
 
-      // Reset fields
+      
       setTickets(1);
       setDate("");
       setTime("");
 
-      // Auto-close modal with fade
+      
       setTimeout(() => {
         setSuccessMsg("");
-        onClose(); // close BookingModal
-        if (onBookingSuccess) onBookingSuccess(); // close MovieModal
-      }, 1500); // 1.5s delay for smooth feedback
+        onClose(); 
+        if (onBookingSuccess) onBookingSuccess(); 
+      }, 1500); 
     } catch (error) {
       alert(error.message || "Booking failed. Please try again.");
     } finally {
@@ -70,7 +70,7 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn">
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-auto p-6 relative animate-fadeInUp">
-        {/* Close Button */}
+        
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
@@ -79,12 +79,12 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
           <X className="w-6 h-6" />
         </button>
 
-        {/* Movie Title */}
+        
         <h2 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
           {movie?.title}
         </h2>
 
-        {/* Success Message */}
+        
         {successMsg && (
           <div className="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100 p-4 rounded-lg mb-4 flex items-center gap-2 animate-slideDown">
             <CheckCircle2 className="w-5 h-5" />
@@ -94,7 +94,7 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
 
         {!successMsg && (
           <>
-            {/* Date Picker */}
+            
             <label className="block mb-2 text-gray-700 dark:text-gray-200 font-medium">
               Select Date
             </label>
@@ -105,7 +105,7 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
               className="w-full px-3 py-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
 
-            {/* Time Picker */}
+           
             <label className="block mb-2 text-gray-700 dark:text-gray-200 font-medium">
               Select Time
             </label>
@@ -116,7 +116,7 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
               className="w-full px-3 py-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             />
 
-            {/* Tickets Selector */}
+            
             <div className="flex items-center justify-center mb-4 space-x-4">
               <button
                 onClick={() => setTickets(Math.max(1, tickets - 1))}
@@ -135,12 +135,12 @@ const BookingModal = ({ open, onClose, movie, onBookingSuccess }) => {
               </button>
             </div>
 
-            {/* Total Price */}
+            
             <p className="text-center font-medium text-gray-800 dark:text-gray-200 mb-6">
               Total: ₹{tickets * ticketPrice}
             </p>
 
-            {/* Action Buttons */}
+            
             <div className="flex justify-between space-x-4">
               <button
                 onClick={onClose}

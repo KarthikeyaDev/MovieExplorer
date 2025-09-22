@@ -28,11 +28,11 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("✅ Connected to MongoDB");
-    console.log("📂 Connected to DB:", mongoose.connection.name);
+    console.log(" Connected to MongoDB");
+    console.log(" Connected to DB:", mongoose.connection.name);
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(` Server running on http://localhost:${PORT}`);
     });
   })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => console.error(" MongoDB connection error:", err));

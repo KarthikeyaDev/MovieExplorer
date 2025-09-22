@@ -88,7 +88,7 @@ const AdminDashboard = () => {
 
   return (
     <div className={`${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"} min-h-screen p-6`}>
-      {/* Header */}
+      
       <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">🎬 Admin Dashboard</h1>
         <button
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Summary Cards */}
+      
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         {[
           { title: "Total Revenue", value: `₹${summary.totalRevenue}`, icon: <FaRupeeSign /> },
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Search */}
+      
       <input
         type="text"
         placeholder=" Search by User, Email, or Movie"
@@ -137,7 +137,7 @@ const AdminDashboard = () => {
         }`}
       />
 
-      {/* Table */}
+      
       <div className="overflow-x-auto rounded-lg shadow-lg">
         <table className="min-w-full table-auto">
           <thead className={`${darkMode ? "bg-gray-800" : "bg-gray-200"} text-left`}>
@@ -194,7 +194,7 @@ const AdminDashboard = () => {
         </table>
       </div>
 
-      {/* Pagination */}
+      
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 space-x-2 flex-wrap">
           {Array.from({ length: totalPages }, (_, i) => (
